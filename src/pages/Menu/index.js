@@ -16,17 +16,10 @@ function Menu() {
         {
             label: 'Usuários',
             icon: 'pi pi-fw pi-user',
-            items: [
-                {
-                    label: 'Novo',
-                    icon: 'pi pi-fw pi-user-plus',
-                    command: () => { navigate('/usuario') }
-                },
-                {
-                    label: 'Procurar',
-                    icon: 'pi pi-fw pi-users',
-                }
-            ]
+            command: () => {
+                navigate('/usuario')
+            }
+
         },
         {
             label: 'Clientes',
@@ -37,38 +30,12 @@ function Menu() {
         {
             label: 'Produtos',
             icon: 'pi pi-shopping-bag',
-            items: [
-                {
-                    label: 'Novo',
-                    icon: 'pi pi-plus-circle',
-                },
-                {
-                    label: 'Deletar',
-                    icon: 'pi pi-minus-circle',
-                },
-                {
-                    label: 'Procurar',
-                    icon: 'pi pi-search',
-                }
-            ]
+            command: () => { navigate('/cliente') }
         },
         {
             label: 'Realizar pedido',
             icon: 'pi pi-shopping-cart',
-            items: [
-                {
-                    label: 'Novo',
-                    icon: 'pi pi-plus-circle',
-                },
-                {
-                    label: 'Deletar',
-                    icon: 'pi pi-minus-circle',
-                },
-                {
-                    label: 'Procurar',
-                    icon: 'pi pi-search',
-                }
-            ]
+            command: () => { navigate('/cliente') }
         },
         {
             label: 'Relatórios',
