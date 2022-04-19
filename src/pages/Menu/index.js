@@ -17,14 +17,14 @@ function Menu() {
             label: 'Usuários',
             icon: 'pi pi-fw pi-user',
             command: () => {
-                navigate('/usuario')
+                navigate('/usuarios')
             }
 
         },
         {
             label: 'Clientes',
             icon: 'pi pi-fw pi-user',
-            command: () => { navigate('/cliente') }
+            command: () => { navigate('/clientes') }
 
         },
         {

@@ -5,8 +5,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 //Importar as páginas
 import Menu from './pages/Menu';
 import PaginaInicial from './components/PaginaInicial/';
-import CadastroUsuario from './components/Usuario';
-import DataTableUsuario from './components/Cliente';
+import DataTableUsuario from './components/Usuario';
+import DataTableCliente from './components/Cliente';
 import Pagina404 from './pages/Pagina404'
 
 
@@ -18,8 +18,8 @@ function App() {
         <Menu />
         <Routes>
           <Route path="/" exact element={<PaginaInicial />} />
-          <Route path="/usuario" element={<CadastroUsuario />} />
-          <Route path="/cliente" element={<DataTableUsuario />} />
+          <Route path="/clientes" element={<DataTableCliente />} />
+          <Route path="/usuarios" element={<DataTableUsuario />} />
           <Route path="*" element={<Pagina404 />} />
         </Routes>
       </BrowserRouter>
