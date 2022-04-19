@@ -56,13 +56,13 @@ function Menu() {
         {
             label: 'Sair',
             icon: 'pi pi-fw pi-power-off'
-        }
+        },
     ];
-
 
     return (
         <>
             <Menubar model={items} />
+
         </>
     );
 }
