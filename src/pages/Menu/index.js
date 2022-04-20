@@ -30,7 +30,7 @@ function Menu() {
         {
             label: 'Produtos',
             icon: 'pi pi-shopping-bag',
-            command: () => { navigate('/cliente') }
+            command: () => { navigate('/testes') }
         },
         {
             label: 'Realizar pedido',

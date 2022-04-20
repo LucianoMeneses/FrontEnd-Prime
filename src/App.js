@@ -7,6 +7,7 @@ import Menu from './pages/Menu';
 import PaginaInicial from './components/PaginaInicial/';
 import DataTableUsuario from './components/Usuario';
 import DataTableCliente from './components/Cliente';
+import Teste from './components/Teste';
 import Pagina404 from './pages/Pagina404'
 
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" exact element={<PaginaInicial />} />
           <Route path="/clientes" element={<DataTableCliente />} />
           <Route path="/usuarios" element={<DataTableUsuario />} />
+          <Route path="/testes" element={<Teste />} />
           <Route path="*" element={<Pagina404 />} />
         </Routes>
       </BrowserRouter>
