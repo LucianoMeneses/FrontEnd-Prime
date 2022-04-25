@@ -1,92 +1,37 @@
-import React, { useState, useRef } from 'react';
-import { classNames } from 'primereact/utils';
+import React, { useState, useRef, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { FileUpload } from 'primereact/fileupload';
-import { Toolbar } from 'primereact/toolbar';
 import { InputMask } from 'primereact/inputmask'
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { Messages } from 'primereact/messages';
 import '../../App.css';
+import api from "../../Api/api";
 
 const DataTableCliente = () => {
 
-    const cliente = [{
-        id: 1,
-        nome: 'Luciano Araujo Meneses',
-        email: "luciano@gmail.com",
-        telefone: '85-999663245',
-        cidade: 'Fortaleza',
-        bairro: 'Siqueira',
-        rua: 'Rua João pedro moreira brandão',
-        numero: '100A'
-    },
-    {
-        id: 4,
-        nome: 'Luciano Araujo Meneses',
-        email: "luciano@gmail.com",
-        telefone: '85-999663245',
-        cidade: 'Fortaleza',
-        bairro: 'Siqueira',
-        rua: 'Rua João pedro moreira brandão',
-        numero: '100A'
-    },
-    {
-        id: 5,
-        nome: 'Luciano Araujo Meneses',
-        email: "luciano@gmail.com",
-        telefone: '85-999663245',
-        cidade: 'Fortaleza',
-        bairro: 'Siqueira',
-        rua: 'Rua João pedro moreira brandão',
-        numero: '100A'
-    },
-    {
-        id: 6,
-        nome: 'Luciano Araujo Meneses',
-        email: "luciano@gmail.com",
-        telefone: '85-999663245',
-        cidade: 'Fortaleza',
-        bairro: 'Siqueira',
-        rua: 'Rua João pedro moreira brandão',
-        numero: '100A'
-    },
-    {
-        nome: 'Pedro Araujo Meneses',
-        email: "luciano@gmail.com",
-        telefone: '85-999663245',
-        cidade: 'Fortaleza',
-        bairro: 'Siqueira',
-        rua: 'Rua João pedro moreira brandão',
-        numero: '100A'
-    },
-    {
-        id: 8,
-        nome: 'João Araujo Meneses',
-        email: "luciano@gmail.com",
-        telefone: '85-999663245',
-        cidade: 'Fortaleza',
-        bairro: 'Siqueira',
-        rua: 'Rua João pedro moreira brandão',
-        numero: '100A'
-    },
-    {
-        id: 9,
-        nome: 'Thiago Araujo Meneses',
-        email: "luciano@gmail.com",
-        telefone: '85-999663245',
-        cidade: 'Fortaleza',
-        bairro: 'Siqueira',
-        rua: 'Rua João pedro moreira brandão',
-        numero: '100A'
-    },
+    const showSuccess = () => {
+        messages.current.show({ severity: 'success', summary: 'Success Message', detail: 'Order submitted', life: 5000, content: "Usuário exluído com sucesso" });
+    }
 
-    ]
+    useEffect(() => {
+
+        async function buscar() {
+            await api
+                .get("/clientes")
+                .then((response) => setCliente(response.data))
+                .catch((err) => {
+                    console.error("ops! ocorreu um erro" + err);
+                });
+        }
+        buscar();
+    }, []);
 
     let emptyProduct = {
-        id: 9,
+
+        id: null,
         nome: '',
         email: '',
         telefone: '',
@@ -96,7 +41,17 @@ const DataTableCliente = () => {
         numero: ''
     };
 
-    const [products, setProducts] = useState(null);
+    const [id, setId] = useState([])
+    const [cliente, setCliente] = useState([emptyProduct]);
+    const [nome, setNome] = useState('');
+    const [email, setEmail] = useState('');
+    const [telefone, setTelefone] = useState('');
+    const [cidade, setCidade] = useState('');
+    const [bairro, setBairro] = useState('');
+    const [rua, setRua] = useState('');
+    const [numero, setNumero] = useState('');
+    const [complemento, setComplemento] = useState('');
+    const [products, setProducts] = useState(false);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
@@ -126,29 +81,32 @@ const DataTableCliente = () => {
         setDeleteProductsDialog(false);
     }
 
-    const saveProduct = () => {
+    const saveProduct = async () => {
         setSubmitted(true);
 
-        if (product.name.trim()) {
-            let _products = [...products];
-            let _product = { ...product };
-            if (product.id) {
-                const index = findIndexById(product.id);
-
-                _products[index] = _product;
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-            }
-            else {
-                _product.id = createId();
-                _product.image = 'product-placeholder.svg';
-                _products.push(_product);
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
-            }
-
-            setProducts(_products);
-            setProductDialog(false);
-            setProduct(emptyProduct);
+        const clientes =
+        {
+            id: null,
+            nome: nome,
+            email: email,
+            telefone: telefone,
+            cidade: cidade,
+            bairro: bairro,
+            rua: rua,
+            numero: numero
         }
+
+        await api
+            .post("/clientes", clientes)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+        showSuccess();
+
     }
 
     const editProduct = (product) => {
@@ -156,29 +114,26 @@ const DataTableCliente = () => {
         setProductDialog(true);
     }
 
-    const confirmDeleteProduct = (product) => {
-        setProduct(product);
+    const confirmDeleteClient = (rowData) => {
         setDeleteProductDialog(true);
+        setId(rowData.id)
+
     }
 
-    const deleteProduct = () => {
-        let _products = products.filter(val => val.id !== product.id);
-        setProducts(_products);
+    const deleteProduct = async () => {
+
+        await api
+            .delete(`/clientes/${id}`)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
         setDeleteProductDialog(false);
-        setProduct(emptyProduct);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-    }
 
-    const findIndexById = (id) => {
-        let index = -1;
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
+        showSuccess();
     }
 
     const createId = () => {
@@ -190,38 +145,6 @@ const DataTableCliente = () => {
         return id;
     }
 
-    const importCSV = (e) => {
-        const file = e.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const csv = e.target.result;
-            const data = csv.split('\n');
-
-            // Prepare DataTable
-            const cols = data[0].replace(/['"]+/g, '').split(',');
-            data.shift();
-
-            const importedData = data.map(d => {
-                d = d.split(',');
-                const processedData = cols.reduce((obj, c, i) => {
-                    c = c === 'Status' ? 'inventoryStatus' : (c === 'Reviews' ? 'rating' : c.toLowerCase());
-                    obj[c] = d[i].replace(/['"]+/g, '');
-                    (c === 'price' || c === 'rating') && (obj[c] = parseFloat(obj[c]));
-                    return obj;
-                }, {});
-
-                processedData['id'] = createId();
-                return processedData;
-            });
-
-            const _products = [...products, ...importedData];
-
-            setProducts(_products);
-        };
-
-        reader.readAsText(file, 'UTF-8');
-    }
-
     const exportCSV = () => {
         dt.current.exportCSV();
     }
@@ -231,51 +154,29 @@ const DataTableCliente = () => {
     }
 
     const deleteSelectedProducts = () => {
-        let _products = products.filter(val => !selectedProducts.includes(val));
-        setProducts(_products);
-        setDeleteProductsDialog(false);
-        setSelectedProducts(null);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+
     }
 
-    const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || '';
-        let _product = { ...product };
-        _product[`${name}`] = val;
-
-        setProduct(_product);
-    }
-
-    const leftToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <Button label="Novo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
-                <Button label="Excluir" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
-            </React.Fragment>
-        )
-    }
-
-    const rightToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <FileUpload mode="basic" name="demo[]" auto url="https://primefaces.org/primereact/showcase/upload.php" accept=".csv" chooseLabel="Importar" className="mr-2 inline-block" onUpload={importCSV} />
-                <Button label="Exportar" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
-            </React.Fragment>
-        )
-    }
+    const messages = useRef(null);
 
     const actionBodyTemplate = (rowData) => {
         return (
             <React.Fragment>
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteClient(rowData)} />
             </React.Fragment>
         );
     }
 
     const header = (
         <div className="table-header">
-            <h5 className="mx-0 my-1">Clientes</h5>
+            <h5 className="">Clientes</h5>
+            <div className="button-header">
+                <Button label="Novo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
+                <Button label="Excluir" icon="pi pi-trash" className="p-button-danger mr-2" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
+                <Button label="Exportar" icon="pi pi-upload" className="p-button-help mr-2" onClick={exportCSV} />
+            </div>
+            <Messages ref={messages}></Messages>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Procurar..." />
@@ -301,19 +202,20 @@ const DataTableCliente = () => {
         </React.Fragment>
     );
 
+
     return (
+
         <div className="datatable-crud-demo">
             <Toast ref={toast} />
 
             <div className="card-table">
-                <Toolbar className="mb-4 button-table" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
-
                 <DataTable ref={dt} value={cliente} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
-                    dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                    dataKey="id" paginator rows={6} rowsPerPageOptions={[6, 12, 24]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} Clientes"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
                     <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
+                    <Column field="id" header="Id" sortable style={{ minWidth: '2rem' }}></Column>
                     <Column field="nome" header="Nome" sortable style={{ minWidth: '5rem' }}></Column>
                     <Column field="email" header="Email" style={{ minWidth: '5rem' }}></Column>
                     <Column field="telefone" header="Telefone" style={{ minWidth: '5rem' }}></Column>
@@ -321,7 +223,7 @@ const DataTableCliente = () => {
                     <Column field="bairro" header="Bairro" sortable style={{ minWidth: '5rem' }}></Column>
                     <Column field="rua" header="Rua" style={{ minWidth: '5rem' }}></Column>
                     <Column field="numero" header="Número" style={{ minWidth: '2rem' }}></Column>
-                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '5rem' }}></Column>
                 </DataTable>
             </div>
 
@@ -329,8 +231,7 @@ const DataTableCliente = () => {
                 {product.image && <img src={`images/product/${product.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={product.image} className="product-image block m-auto pb-3" />}
                 <div className="field">
                     <label htmlFor="name">Nome</label>
-                    <InputText id="name" value={cliente.nome} onChange={(e) => onInputChange(e, 'nome')} required autoFocus className={classNames({ 'p-invalid': submitted && !cliente.nome })} />
-                    {submitted && !cliente.nome && <small className="p-error">Nome é brigatório.</small>}
+                    <InputText id="name" value={nome} onChange={(e) => setNome(e.target.value)} />
                 </div>
 
                 <div className="field">
@@ -338,13 +239,12 @@ const DataTableCliente = () => {
                     <div className="formgrid grid">
                         <div className="p-fieldset-content col-7">
                             <label htmlFor="name">Email</label>
-                            <InputText id="email" value={cliente.email} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !cliente.email })} />
-                            {submitted && !cliente.email && <small className="p-error">Email é obrigatório.</small>}
+                            <InputText id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
+
                         <div className="p-fieldset-content col-5">
                             <label htmlFor="in">Telefone</label>
-                            <InputMask id="email" value={cliente.telefone} mask="99-999999999" onChange={(e) => onInputChange(e, 'email')} required autoFocus className={classNames({ 'p-invalid': submitted && !cliente.telefone })} />
-                            {submitted && !cliente.telefone && <small className="p-error">Telefone é obrigatório.</small>}
+                            <InputMask id="email" value={telefone} mask="99-999999999" onChange={(e) => setTelefone(e.target.value)} />
                         </div>
                     </div>
                 </div>
@@ -354,27 +254,23 @@ const DataTableCliente = () => {
                     <div className="formgrid grid">
                         <div className="p-fieldset-content col-5">
                             <label htmlFor="in">Cidade</label>
-                            <InputText id="cidade" value={cliente.cidade} onChange={(e) => onInputChange(e, 'cidade')} required autoFocus className={classNames({ 'p-invalid': submitted && !cliente.cidade })} />
-                            {submitted && !cliente.cidade && <small className="p-error">Cidade é obrigatório.</small>}
+                            <InputText id="cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} />
                         </div>
                         <div className="p-fieldset-content col-7">
                             <label htmlFor="in">Bairro</label>
-                            <InputText id="bairro" value={cliente.bairro} onChange={(e) => onInputChange(e, 'bairro')} required autoFocus className={classNames({ 'p-invalid': submitted && !cliente.bairro })} />
-                            {submitted && !cliente.bairro && <small className="p-error">Bairro é obrigatório.</small>}
+                            <InputText id="bairro" value={bairro} onChange={(e) => setBairro(e.target.value)} />
                         </div>
                         <div className="p-fieldset-content col-9">
                             <label htmlFor="in">Rua</label>
-                            <InputText id="rua" value={cliente.rua} onChange={(e) => onInputChange(e, 'rua')} required autoFocus className={classNames({ 'p-invalid': submitted && !cliente.rua })} />
-                            {submitted && !cliente.rua && <small className="p-error">Rua é obrigatório.</small>}
+                            <InputText id="rua" value={rua} onChange={(e) => setRua(e.target.value)} />
                         </div>
                         <div className="p-fieldset-content col-3">
                             <label htmlFor="in">Número</label>
-                            <InputText id="numero" value={cliente.numero} onChange={(e) => onInputChange(e, 'numero')} required autoFocus className={classNames({ 'p-invalid': submitted && !cliente.numero })} />
-                            {submitted && !cliente.numero && <small className="p-error">Número é obrigatório.</small>}
+                            <InputText id="numero" value={numero} onChange={(e) => setNumero(e.target.value)} />
                         </div>
                         <div className="p-fieldset-content col-12">
                             <label htmlFor="in">Complemento</label>
-                            <InputText id="complemento" value={cliente.complemento} onChange={(e) => onInputChange(e, 'bairro')} />
+                            <InputText id="complemento" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
                         </div>
                     </div>
                 </div>
@@ -382,7 +278,7 @@ const DataTableCliente = () => {
             <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                    {product && <span>Você tem certeza que deseja excluir <b>{cliente.nome}</b>?</span>}
+                    {product && <span>Você tem certeza que deseja excluir <b>{nome}</b>?</span>}
                 </div>
             </Dialog>
             <Dialog visible={deleteProductsDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductsDialogFooter} onHide={hideDeleteProductsDialog}>

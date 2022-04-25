@@ -11,7 +11,6 @@ function Menu() {
             label: 'Home',
             icon: 'pi pi-fw pi-home',
             command: () => { navigate('/') }
-
         },
         {
             label: 'Usuários',
@@ -19,13 +18,11 @@ function Menu() {
             command: () => {
                 navigate('/usuarios')
             }
-
         },
         {
             label: 'Clientes',
             icon: 'pi pi-fw pi-user',
             command: () => { navigate('/clientes') }
-
         },
         {
             label: 'Produtos',
@@ -44,13 +41,11 @@ function Menu() {
                 {
                     label: 'Produtos',
                     icon: 'pi pi-shopping-bag',
-
                 },
                 {
                     label: 'Pedidos',
                     icon: 'pi pi-shopping-cart',
                 }
-
             ]
         },
         {
