@@ -29,7 +29,7 @@ const DataTableCliente = () => {
         buscar();
     }, []);
 
-    let emptyProduct = {
+    let emptyCliente = {
 
         id: null,
         nome: '',
@@ -42,7 +42,7 @@ const DataTableCliente = () => {
     };
 
     const [id, setId] = useState([])
-    const [cliente, setCliente] = useState([emptyProduct]);
+    const [cliente, setCliente] = useState([emptyCliente]);
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [telefone, setTelefone] = useState('');
@@ -51,11 +51,10 @@ const DataTableCliente = () => {
     const [rua, setRua] = useState('');
     const [numero, setNumero] = useState('');
     const [complemento, setComplemento] = useState('');
-    const [products, setProducts] = useState(false);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    const [product, setProduct] = useState(emptyProduct);
+    const [product, setProduct] = useState(emptyCliente);
     const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
@@ -63,7 +62,7 @@ const DataTableCliente = () => {
     const dt = useRef(null);
 
     const openNew = () => {
-        setProduct(emptyProduct);
+        setProduct(emptyCliente);
         setSubmitted(false);
         setProductDialog(true);
     }

@@ -1,16 +1,13 @@
-//Importar as dependências
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-//Importar as páginas
-import Menu from './pages/Menu';
-import PaginaInicial from './components/PaginaInicial/';
-import DataTableUsuario from './components/Usuario';
-import DataTableCliente from './components/Cliente';
+import Menu from './components/Menu'
+import PaginaInicial from './pages/PaginaInicial';
+import DataTableUsuario from './pages/Usuario';
+import DataTableCliente from './pages/Cliente';
 import Pagina404 from './pages/Pagina404'
 
-
-//Criar o componentes com as rotas
 function App() {
   return (
     <>
