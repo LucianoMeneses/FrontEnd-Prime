@@ -1,5 +1,5 @@
 
-*{font-family:Arial, sans-serif; font-size: 18px;}
+*{font-family:Arial, sans-serif; font-size: 1rem;}
 
 body{
   background-color: #e0e6eb;
@@ -16,15 +16,7 @@ body{
       align-items: flex-start;
   }
 }
-.datatable-crud-demo .product-image {
-  width: 100px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-.datatable-crud-demo .p-dialog .product-image {
-  width: 150px;
-  margin: 0 auto 2rem auto;
-  display: block;
-}
+
 .datatable-crud-demo .confirmation-content {
   display: flex;
   align-items: center;
@@ -46,8 +38,8 @@ body{
 }
 
 .card-table{
-      margin-top: 10px;
-      max-width: 100%;
+    margin-top: 10px;
+    max-width: 100%;
       align-items: center;
       display: flex;
       flex-direction: column;

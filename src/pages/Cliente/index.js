@@ -33,19 +33,7 @@ const DataTableCliente = () => {
             });
     }
 
-    let clienteVazio = {
-        id: null,
-        nome: '',
-        email: '',
-        telefone: '',
-        cidade: '',
-        bairro: '',
-        rua: '',
-        numero: '',
-        complemento: ''
-    };
-
-    const [id, setId] = useState([])
+    const [id, setId] = useState()
     const [cliente, setCliente] = useState();
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
@@ -55,10 +43,9 @@ const DataTableCliente = () => {
     const [rua, setRua] = useState('');
     const [numero, setNumero] = useState('');
     const [complemento, setComplemento] = useState('');
-    const [productDialog, setProductDialog] = useState(false);
-    const [deleteProductDialog, setDeleteProductDialog] = useState(false);
-    const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    const [product, setProduct] = useState(clienteVazio);
+    const [clienteDialog, setClienteDialog] = useState(false);
+    const [deleteClienteDialog, setDeleteClienteDialog] = useState(false);
+    const [deleteClientesDialog, setDeleteClientesDialog] = useState(false);
     const [clientesSelecionados, setClientesSelecionados] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
@@ -66,34 +53,39 @@ const DataTableCliente = () => {
     const dt = useRef(null);
 
     const novo = () => {
-        setCliente([clienteVazio]);
-        console.log(cliente)
-
+        setId(null)
+        setNome('')
+        setEmail('')
+        setTelefone('')
+        setCidade('')
+        setBairro('')
+        setRua('')
+        setNumero('')
+        setComplemento('')
         setSubmitted(false);
-        setProductDialog(true);
+        setClienteDialog(true);
     }
 
     const hideDialog = () => {
         setSubmitted(false);
-        setProductDialog(false);
+        setClienteDialog(false);
     }
 
     const hideDeleteProductDialog = () => {
-        setDeleteProductDialog(false);
+        setDeleteClienteDialog(false);
     }
 
     const ocultarPopupExcluirClientes = () => {
-        setDeleteProductsDialog(false);
+        setDeleteClientesDialog(false);
     }
 
     const saveProduct = async () => {
         setSubmitted(true);
 
-        if (nome && email && telefone && cidade && bairro && rua && numero) {
+        if (nome.trim() && email && telefone && cidade && bairro && rua && numero) {
 
             const clientes =
             {
-                id: null,
                 nome: nome,
                 email: email,
                 telefone: telefone,
@@ -104,37 +96,68 @@ const DataTableCliente = () => {
                 complemento: complemento
             }
 
-            await api
-                .post("/clientes", clientes)
-                .then(function (response) {
-                    console.log(response);
-                    if (response.status === 200) {
-                        setProductDialog(false)
-                        showSuccess();
-                        buscar();
-                    }
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    setProductDialog(false)
-                    showError()
-                });
+            if (id) {
 
-            setProductDialog(false)
+                await api
+                    .put(`/clientes/${id}`, clientes)
+                    .then(function (response) {
+                        console.log(response);
+
+                        if (response.status === 200) {
+                            setClienteDialog(false);
+                            showSuccess();
+                            buscar();
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        setClienteDialog(false);
+                        showError()
+                    });
+
+            } else {
+
+                await api
+                    .post("/clientes", clientes)
+                    .then(function (response) {
+                        console.log(response);
+                        if (response.status === 200) {
+                            setClienteDialog(false)
+                            showSuccess();
+                            buscar();
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        setClienteDialog(false)
+                        showError()
+                    });
+
+                setClienteDialog(false)
+            }
         }
 
     }
 
-    const editProduct = (cliente) => {
-        console.log(cliente)
-        setProductDialog(true);
-    }
-
     const confirmDeleteClient = (rowData) => {
-        setDeleteProductDialog(true);
+        setDeleteClienteDialog(true);
         setId(rowData.id)
         setNome(rowData.nome)
 
+    }
+
+    const confirmEditCliente = (cliente) => {
+
+        setClienteDialog(true);
+        setId(cliente.id)
+        setNome(cliente.nome)
+        setEmail(cliente.email)
+        setTelefone(cliente.telefone)
+        setCidade(cliente.cidade)
+        setBairro(cliente.bairro)
+        setRua(cliente.rua)
+        setNumero(cliente.numero)
+        setComplemento(cliente.complemento)
     }
 
     const deleteProduct = async () => {
@@ -145,7 +168,7 @@ const DataTableCliente = () => {
                 console.log(response);
 
                 if (response.status === 204) {
-                    setDeleteProductDialog(false);
+                    setDeleteClienteDialog(false);
                     showSuccess();
                     setClientesSelecionados(null);
                     buscar();
@@ -153,7 +176,7 @@ const DataTableCliente = () => {
             })
             .catch(function (error) {
                 console.log(error);
-                setDeleteProductDialog(false);
+                setDeleteClienteDialog(false);
                 setClientesSelecionados(null);
                 showError()
             });
@@ -164,23 +187,21 @@ const DataTableCliente = () => {
     }
 
     const confirmDeleteSelected = () => {
-        setDeleteProductsDialog(true);
+        setDeleteClientesDialog(true);
     }
 
     const deleteSelectedProducts = async () => {
 
         clientesSelecionados.map(
-            async (c) => {
-
-                console.log(c)
+            async (clientes) => {
 
                 await api
-                    .post("/clientes/deletarClientes", c)
+                    .post("/clientes/deletarClientes", clientes)
                     .then(function (response) {
                         console.log(response);
 
                         if (response.status === 204) {
-                            setDeleteProductsDialog(false);
+                            setDeleteClientesDialog(false);
                             setClientesSelecionados(null);
                             showSuccess();
                             buscar();
@@ -188,7 +209,7 @@ const DataTableCliente = () => {
                     })
                     .catch(function (error) {
                         console.log(error);
-                        setDeleteProductsDialog(false);
+                        setDeleteClientesDialog(false);
                         setClientesSelecionados(null);
                         showError()
                     });
@@ -196,11 +217,10 @@ const DataTableCliente = () => {
         )
     }
 
-
     const actionBodyTemplate = (rowData) => {
         return (
             <React.Fragment>
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} />
+                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => confirmEditCliente(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={() => confirmDeleteClient(rowData)} />
             </React.Fragment>
         );
@@ -254,7 +274,7 @@ const DataTableCliente = () => {
 
             <div className="card-table">
                 <DataTable ref={dt} value={cliente} selection={clientesSelecionados} onSelectionChange={(e) => setClientesSelecionados(e.value)}
-                    dataKey="id" paginator rows={6} rowsPerPageOptions={[6, 12, 24]}
+                    dataKey="id" paginator rows={7} rowsPerPageOptions={[7, 12, 24]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} Clientes"
                     globalFilter={globalFilter} header={header} responsiveLayout="scroll">
@@ -272,69 +292,65 @@ const DataTableCliente = () => {
                 </DataTable>
             </div>
 
-            <Dialog visible={productDialog} style={{ width: '600px' }} header="Detalhes do cliente" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                {product.image && <img src={`images/product/${product.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} alt={product.image} className="product-image block m-auto pb-3" />}
+            <Dialog visible={clienteDialog} style={{ width: '900px' }} header="Detalhes do cliente" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                 <div className="field">
                     <label htmlFor="name">Nome</label>
-                    <InputText id="name" maxLength="50" value={nome} onChange={(e) => setNome(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !nome })} />
+                    <InputText id="name" minLength="3" maxLength="50" value={nome} onChange={(e) => setNome(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !nome.trim() })} />
                 </div>
 
                 <div className="field">
-                    <label className="mb-3">Contato</label>
                     <div className="formgrid grid">
-                        <div className="p-fieldset-content col-7">
-                            <label htmlFor="name">Email</label>
-                            <InputText id="email" maxLength="40" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !email })} />
+                        <div className="p-fieldset-content col-7 mb-1">
+                            <label htmlFor="email">Email</label>
+                            <InputText id="email" maxLength="40" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !email.trim() })} />
                         </div>
 
                         <div className="p-fieldset-content col-5">
-                            <label htmlFor="in">Telefone</label>
-                            <InputText id="telefone" maxLength="11" keyfilter="num" value={telefone} onChange={(e) => setTelefone(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !telefone })} />
+                            <label htmlFor="telefone">Telefone</label>
+                            <InputText id="telefone" maxLength="11" keyfilter="num" value={telefone} onChange={(e) => setTelefone(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !telefone.trim() })} />
                         </div>
                     </div>
                 </div>
 
                 <div className="field">
-                    <label className="mb-3">Endereço</label>
                     <div className="formgrid grid">
                         <div className="p-fieldset-content col-5">
-                            <label htmlFor="in">Cidade</label>
-                            <InputText id="cidade" maxLength="20" value={cidade} onChange={(e) => setCidade(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !cidade })} />
+                            <label htmlFor="cidade">Cidade</label>
+                            <InputText id="cidade" maxLength="20" value={cidade} onChange={(e) => setCidade(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !cidade.trim() })} />
                         </div>
                         <div className="p-fieldset-content col-7">
-                            <label htmlFor="in">Bairro</label>
-                            <InputText id="bairro" maxLength="20" value={bairro} onChange={(e) => setBairro(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !bairro })} />
+                            <label htmlFor="bairro">Bairro</label>
+                            <InputText id="bairro" maxLength="20" value={bairro} onChange={(e) => setBairro(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !bairro.trim() })} />
                         </div>
                         <div className="p-fieldset-content col-9">
-                            <label htmlFor="in">Rua</label>
-                            <InputText id="rua" maxLength="20" value={rua} onChange={(e) => setRua(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !rua })} />
+                            <label htmlFor="rua">Rua</label>
+                            <InputText id="rua" maxLength="20" value={rua} onChange={(e) => setRua(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !rua.trim() })} />
                         </div>
                         <div className="p-fieldset-content col-3">
-                            <label htmlFor="in">Número</label>
-                            <InputText id="numero" maxLength="10" value={numero} onChange={(e) => setNumero(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !numero })} />
+                            <label htmlFor="numero">Número</label>
+                            <InputText id="numero" maxLength="10" value={numero} onChange={(e) => setNumero(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !numero.trim() })} />
                         </div>
                         <div className="p-fieldset-content col-12">
-                            <label htmlFor="in">Complemento</label>
-                            <InputText id="complemento" maxLength="30" value={complemento} onChange={(e) => setComplemento(e.target.value)} />
+                            <label htmlFor="complemento">Complemento</label>
+                            <InputText id="complemento" maxLength="30" value={complemento} onChange={(e) => setComplemento(e.target.value)} required autoFocus className={classNames({ 'p-invalid': submitted && !complemento.trim() })} />
                         </div>
                     </div>
                 </div>
             </Dialog>
-            <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
+            <Dialog visible={deleteClienteDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                    {product && <span>Você tem certeza que deseja excluir <b>{nome}</b>?</span>}
+                    {cliente && <span>Você tem certeza que deseja excluir <b>{nome}</b>?</span>}
                 </div>
             </Dialog>
-            <Dialog visible={deleteProductsDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductsDialogFooter} onHide={ocultarPopupExcluirClientes}>
+            <Dialog visible={deleteClientesDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductsDialogFooter} onHide={ocultarPopupExcluirClientes}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                    {product && <span>Você tem certeza que deseja excluir todos os clientes selecionados?</span>}
+                    {cliente && <span>Você tem certeza que deseja excluir todos os clientes selecionados?</span>}
                 </div>
             </Dialog>
         </div>
     );
 }
-
 
 export default DataTableCliente;
