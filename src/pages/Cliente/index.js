@@ -33,8 +33,8 @@ const DataTableCliente = () => {
             });
     }
 
-    let emptyCliente = {
-
+    let clienteVazio = {
+        id: null,
         nome: '',
         email: '',
         telefone: '',
@@ -58,15 +58,17 @@ const DataTableCliente = () => {
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    const [product, setProduct] = useState(emptyCliente);
-    const [selectedProducts, setSelectedProducts] = useState(null);
+    const [product, setProduct] = useState(clienteVazio);
+    const [clientesSelecionados, setClientesSelecionados] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
 
-    const openNew = () => {
-        setProduct(emptyCliente);
+    const novo = () => {
+        setCliente([clienteVazio]);
+        console.log(cliente)
+
         setSubmitted(false);
         setProductDialog(true);
     }
@@ -80,7 +82,7 @@ const DataTableCliente = () => {
         setDeleteProductDialog(false);
     }
 
-    const hideDeleteProductsDialog = () => {
+    const ocultarPopupExcluirClientes = () => {
         setDeleteProductsDialog(false);
     }
 
@@ -123,8 +125,8 @@ const DataTableCliente = () => {
 
     }
 
-    const editProduct = (product) => {
-        setProduct({ ...product });
+    const editProduct = (cliente) => {
+        console.log(cliente)
         setProductDialog(true);
     }
 
@@ -145,12 +147,14 @@ const DataTableCliente = () => {
                 if (response.status === 204) {
                     setDeleteProductDialog(false);
                     showSuccess();
+                    setClientesSelecionados(null);
                     buscar();
                 }
             })
             .catch(function (error) {
                 console.log(error);
                 setDeleteProductDialog(false);
+                setClientesSelecionados(null);
                 showError()
             });
     }
@@ -163,9 +167,35 @@ const DataTableCliente = () => {
         setDeleteProductsDialog(true);
     }
 
-    const deleteSelectedProducts = () => {
+    const deleteSelectedProducts = async () => {
 
+        clientesSelecionados.map(
+            async (c) => {
+
+                console.log(c)
+
+                await api
+                    .post("/clientes/deletarClientes", c)
+                    .then(function (response) {
+                        console.log(response);
+
+                        if (response.status === 204) {
+                            setDeleteProductsDialog(false);
+                            setClientesSelecionados(null);
+                            showSuccess();
+                            buscar();
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        setDeleteProductsDialog(false);
+                        setClientesSelecionados(null);
+                        showError()
+                    });
+            }
+        )
     }
+
 
     const actionBodyTemplate = (rowData) => {
         return (
@@ -180,8 +210,8 @@ const DataTableCliente = () => {
         <div className="table-header">
             <h5 className="">Clientes</h5>
             <div className="button-header">
-                <Button label="Novo" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
-                <Button label="Excluir" icon="pi pi-trash" className="p-button-danger mr-2" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
+                <Button label="Novo" icon="pi pi-plus" className="p-button-success mr-2" onClick={novo} />
+                <Button label="Excluir" icon="pi pi-trash" className="p-button-danger mr-2" onClick={confirmDeleteSelected} disabled={!clientesSelecionados || !clientesSelecionados.length} />
                 <Button label="Exportar" icon="pi pi-upload" className="p-button-help mr-2" onClick={exportCSV} />
             </div>
             <span className="p-input-icon-left">
@@ -204,7 +234,7 @@ const DataTableCliente = () => {
     );
     const deleteProductsDialogFooter = (
         <React.Fragment>
-            <Button label="Não" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
+            <Button label="Não" icon="pi pi-times" className="p-button-text" onClick={ocultarPopupExcluirClientes} />
             <Button label="Sim" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
         </React.Fragment>
     );
@@ -223,7 +253,7 @@ const DataTableCliente = () => {
             <Toast ref={toast} />
 
             <div className="card-table">
-                <DataTable ref={dt} value={cliente} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
+                <DataTable ref={dt} value={cliente} selection={clientesSelecionados} onSelectionChange={(e) => setClientesSelecionados(e.value)}
                     dataKey="id" paginator rows={6} rowsPerPageOptions={[6, 12, 24]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} Clientes"
@@ -296,7 +326,7 @@ const DataTableCliente = () => {
                     {product && <span>Você tem certeza que deseja excluir <b>{nome}</b>?</span>}
                 </div>
             </Dialog>
-            <Dialog visible={deleteProductsDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductsDialogFooter} onHide={hideDeleteProductsDialog}>
+            <Dialog visible={deleteProductsDialog} style={{ width: '450px' }} header="Confirmar" modal footer={deleteProductsDialogFooter} onHide={ocultarPopupExcluirClientes}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                     {product && <span>Você tem certeza que deseja excluir todos os clientes selecionados?</span>}
